@@ -128,14 +128,11 @@ eventOne((e1) => {
 
 function processResults() {
 
-    console.log("========== BITÁCORA FINAL ==========");
+    console.log("final");
     console.log(register);
 
-
-    // ==========================================
     // REDUCE: LATENCIA PROMEDIO
-    // ==========================================
-
+   
     const totalLatency = register.reduce(
         (accum, current) => {
             return accum +
@@ -151,12 +148,6 @@ function processResults() {
         `Latencia promedio: ${averageLatency} ms`
     );
 
-
-    // ==========================================
-    // FILTER + MAP
-    // Eventos con desviación mayor a 10 ms
-    // ==========================================
-
     const threshold = 10;
 
     const eventsOverThreshold = register
@@ -171,11 +162,6 @@ function processResults() {
 
     console.log(eventsOverThreshold);
 
-
-    // ==========================================
-    // FIND
-    // Primer evento con desviación > 10 ms
-    // ==========================================
 
     const firstDelayedEvent = register.find(
         event =>

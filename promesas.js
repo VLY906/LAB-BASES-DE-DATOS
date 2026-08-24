@@ -150,12 +150,10 @@ eventOne()
 
 function processResults() {
 
-    console.log("\n========== BITÁCORA FINAL - PROMESAS ==========\n");
+    console.log("\nfinal promesas\n");
 
     console.log(register);
 
-
-    // Calculamos la latencia total
     
 
     const totalLatency = register.reduce(
@@ -174,8 +172,6 @@ function processResults() {
         `Latencia promedio: ${averageLatency.toFixed(3)} ms`
     );
 
-    // FILTER + MAP
-    // Eventos con desviación mayor a 10 ms
 
     const threshold = 10;
 
@@ -195,9 +191,6 @@ function processResults() {
 
     console.log(eventsOverThreshold);
 
-
-    // FIND
-    // Primer evento con desviación mayor a 10 ms
 
     const firstDelayedEvent = register.find((event) => {
 

@@ -31,8 +31,6 @@ function eventTwo() {
 
 function eventNever() {
     return new Promise(() => {
-        // No se ejecuta resolve()
-        // No se ejecuta reject()
     });
 }
 

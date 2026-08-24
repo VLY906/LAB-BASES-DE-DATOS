@@ -192,19 +192,13 @@ async function run() {
     }
 }
 
-
-// PROCESAMIENTO
-
 function processResults() {
 
     console.log(
-        "\n========== BITÁCORA FINAL - ASYNC/AWAIT ==========\n"
+        "\nfinal\n"
     );
 
     console.log(register);
-
-    // REDUCE
-    
 
     const totalLatency = register.reduce(
         (accum, current) => {
@@ -225,8 +219,6 @@ function processResults() {
     console.log(
         `Latencia promedio: ${averageLatency.toFixed(3)} ms`
     );
-
-    // FILTER + MAP
    
 
     const threshold = 10;
@@ -248,9 +240,6 @@ function processResults() {
     );
 
     console.log(eventsOverThreshold);
-
-    // FIND
-
 
     const firstDelayedEvent = register.find((event) => {
 
