@@ -1,209 +1,79 @@
-const refTime = Date.now();
-
-function eventOne() {
+function createPromiseEvent(eventName, delay) {
     return new Promise((resolve) => {
+        const scheduledTime = Date.now() + delay;
         setTimeout(() => {
             resolve({
-                eventName: "eventOne",
-                eventType: "aviso largo",
-                scheduledTime: refTime + 500,
+                eventName: eventName,
+                eventType: "long_notice",
+                scheduledTime: scheduledTime,
                 realTime: Date.now()
             });
-        }, 500);
+        }, delay);
     });
 }
-
-function eventTwo() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                eventName: "eventTwo",
-                eventType: "aviso largo",
-                scheduledTime: refTime + 530,
-                realTime: Date.now()
-            });
-        }, 530);
-    });
-}
-
-function eventThree() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                eventName: "eventThree",
-                eventType: "aviso largo",
-                scheduledTime: refTime + 560,
-                realTime: Date.now()
-            });
-        }, 560);
-    });
-}
-
-function eventFour() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                eventName: "eventFour",
-                eventType: "aviso largo",
-                scheduledTime: refTime + 590,
-                realTime: Date.now()
-            });
-        }, 590);
-    });
-}
-
-function eventFive() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                eventName: "eventFive",
-                eventType: "aviso largo",
-                scheduledTime: refTime + 620,
-                realTime: Date.now()
-            });
-        }, 620);
-    });
-}
-
-function eventSix() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                eventName: "eventSix",
-                eventType: "aviso largo",
-                scheduledTime: refTime + 650,
-                realTime: Date.now()
-            });
-        }, 650);
-    });
-}
-
-function eventSeven() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                eventName: "eventSeven",
-                eventType: "aviso largo",
-                scheduledTime: refTime + 680,
-                realTime: Date.now()
-            });
-        }, 680);
-    });
-}
-
-function eventEight() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                eventName: "eventEight",
-                eventType: "aviso largo",
-                scheduledTime: refTime + 710,
-                realTime: Date.now()
-            });
-        }, 710);
-    });
-}
-
-// SECUENCIAL CON PROMESAS
 
 const register = [];
 
-eventOne()
-    .then((e1) => {
-        register.push(e1);
-        return eventTwo();
+createPromiseEvent("eventOne", 500)
+    .then((eventData1) => {
+        register.push(eventData1);
+        return createPromiseEvent("eventTwo", 530);
     })
-    .then((e2) => {
-        register.push(e2);
-        return eventThree();
+    .then((eventData2) => {
+        register.push(eventData2);
+        return createPromiseEvent("eventThree", 560);
     })
-    .then((e3) => {
-        register.push(e3);
-        return eventFour();
+    .then((eventData3) => {
+        register.push(eventData3);
+        return createPromiseEvent("eventFour", 590);
     })
-    .then((e4) => {
-        register.push(e4);
-        return eventFive();
+    .then((eventData4) => {
+        register.push(eventData4);
+        return createPromiseEvent("eventFive", 620);
     })
-    .then((e5) => {
-        register.push(e5);
-        return eventSix();
+    .then((eventData5) => {
+        register.push(eventData5);
+        return createPromiseEvent("eventSix", 650);
     })
-    .then((e6) => {
-        register.push(e6);
-        return eventSeven();
+    .then((eventData6) => {
+        register.push(eventData6);
+        return createPromiseEvent("eventSeven", 680);
     })
-    .then((e7) => {
-        register.push(e7);
-        return eventEight();
+    .then((eventData7) => {
+        register.push(eventData7);
+        return createPromiseEvent("eventEight", 710);
     })
-    .then((e8) => {
-        register.push(e8);
-
-        processResults();
+    .then((eventData8) => {
+        register.push(eventData8);
+        processResults(register);
     })
     .catch((error) => {
-        console.error("Error durante la ejecución:", error);
+        console.error("Execution error:", error);
     });
 
-// PROCESAMIENTO 
+function processResults(eventRegister) {
+    const totalLatency = eventRegister.reduce((accum, current) => {
+        return accum + (current.realTime - current.scheduledTime);
+    }, 0);
 
-function processResults() {
-
-    console.log("\nfinal promesas\n");
-
-    console.log(register);
-
-    
-
-    const totalLatency = register.reduce(
-        (accum, current) => {
-            return accum + (
-                current.realTime - current.scheduledTime
-            );
-        },
-        0
-    );
-
-
-    const averageLatency = totalLatency / register.length;
-
-    console.log(
-        `Latencia promedio: ${averageLatency.toFixed(3)} ms`
-    );
-
-
+    const averageLatency = totalLatency / eventRegister.length;
     const threshold = 10;
 
-    const eventsOverThreshold = register
-        .filter((event) => {
-            const latency =
-                event.realTime - event.scheduledTime;
-
-            return latency > threshold;
-        })
+    const eventsOverThreshold = eventRegister
+        .filter((event) => (event.realTime - event.scheduledTime) > threshold)
         .map((event) => event.eventName);
 
-
-    console.log(
-        "\nEventos con desviación mayor a 10 ms:"
+    const firstDelayedEvent = eventRegister.find(
+        (event) => (event.realTime - event.scheduledTime) > threshold
     );
 
-    console.log(eventsOverThreshold);
+    printResults(eventRegister, averageLatency, eventsOverThreshold, firstDelayedEvent);
+}
 
-
-    const firstDelayedEvent = register.find((event) => {
-
-        const latency =
-            event.realTime - event.scheduledTime;
-
-        return latency > threshold;
-    });
-
-
-    console.log(
-        "\nPrimer evento con desviación mayor a 10 ms:"
-    );
-
-    console.log(firstDelayedEvent);
+function printResults(eventRegister, avgLatency, overThreshold, firstDelayed) {
+    console.log("\n--- Final Promises Results ---");
+    console.log("Register:", eventRegister);
+    console.log(`Average Latency: ${avgLatency.toFixed(3)} ms`);
+    console.log("Events over 10ms threshold:", overThreshold);
+    console.log("First delayed event:", firstDelayed);
 }
