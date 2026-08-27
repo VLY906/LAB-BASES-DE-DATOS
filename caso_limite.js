@@ -39,7 +39,6 @@ async function runLimitCase() {
 }
 
 runLimitCase();
-    // Esta línea Esto nunca aparecerá
 
     console.log("Esto nunca aparecerá");
 }
