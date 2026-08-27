@@ -1,60 +1,44 @@
-const register = [];
-
-function eventOne() {
+function createPromiseEvent(eventName, delay) {
     return new Promise((resolve) => {
+        const scheduledTime = Date.now() + delay;
         setTimeout(() => {
             resolve({
-                eventName: "eventOne",
-                eventType: "aviso largo",
-                scheduledTime: Date.now(),
+                eventName: eventName,
+                eventType: "long_notice",
+                scheduledTime: scheduledTime,
                 realTime: Date.now()
             });
-        }, 500);
+        }, delay);
     });
 }
-
-function eventTwo() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                eventName: "eventTwo",
-                eventType: "aviso largo",
-                scheduledTime: Date.now(),
-                realTime: Date.now()
-            });
-        }, 530);
-    });
-}
-
-
-
 
 function eventNever() {
     return new Promise(() => {
+        // Intentionally missing resolve() and reject()
     });
 }
 
+const register = [];
 
 async function runLimitCase() {
+    console.log("Starting limit case execution...");
 
-    console.log("Inicio del caso límite");
+    const eventData1 = await createPromiseEvent("eventOne", 500);
+    register.push(eventData1);
+    console.log("Event 1 executed successfully.");
 
-    const e1 = await eventOne();
+    const eventData2 = await createPromiseEvent("eventTwo", 530);
+    register.push(eventData2);
+    console.log("Event 2 executed successfully.");
 
-    register.push(e1);
-
-    console.log("Evento 1 ejecutado");
-
-    const e2 = await eventTwo();
-
-    register.push(e2);
-
-    console.log("Evento 2 ejecutado");
-
-    console.log("Esperando evento que nunca termina...");
-
+    console.log("Waiting for an event that never finishes...");
+    
     await eventNever();
 
+    console.log("This line will never appear.");
+}
+
+runLimitCase();
     // Esta línea Esto nunca aparecerá
 
     console.log("Esto nunca aparecerá");
