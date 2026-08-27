@@ -13,9 +13,7 @@ function createPromiseEvent(eventName, delay) {
 }
 
 function eventNever() {
-    return new Promise(() => {
-        // Intentionally missing resolve() and reject()
-    });
+    return new Promise(() => {});
 }
 
 const register = [];
