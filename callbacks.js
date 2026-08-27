@@ -1,121 +1,54 @@
-const refTime = Date.now();
-
-function eventOne(callback) {
+function createCallbackEvent(eventName, delay, callback) {
+    const scheduledTime = Date.now() + delay;
     setTimeout(() => {
-        callback({
-            eventName: "eventOne",
-            eventType: "aviso largo",
-            scheduledTime: refTime + 500,
-            realTime: Date.now()
-        });
-    }, 500);
+        try {
+            callback(null, {
+                eventName: eventName,
+                eventType: "long_notice",
+                scheduledTime: scheduledTime,
+                realTime: Date.now()
+            });
+        } catch (error) {
+            callback(error, null);
+        }
+    }, delay);
 }
-
-function eventTwo(callback) {
-    setTimeout(() => {
-        callback({
-            eventName: "eventTwo",
-            eventType: "aviso largo",
-            scheduledTime: refTime + 530,
-            realTime: Date.now()
-        });
-    }, 530);
-}
-
-function eventThree(callback) {
-    setTimeout(() => {
-        callback({
-            eventName: "eventThree",
-            eventType: "aviso largo",
-            scheduledTime: refTime + 530,
-            realTime: Date.now()
-        });
-    }, 530);
-}
-
-function eventFour(callback) {
-    setTimeout(() => {
-        callback({
-            eventName: "eventFour",
-            eventType: "aviso largo",
-            scheduledTime: refTime + 530,
-            realTime: Date.now()
-        });
-    }, 530);
-}
-
-function eventFive(callback) {
-    setTimeout(() => {
-        callback({
-            eventName: "eventFive",
-            eventType: "aviso largo",
-            scheduledTime: refTime + 530,
-            realTime: Date.now()
-        });
-    }, 530);
-}
-
-function eventSix(callback) {
-    setTimeout(() => {
-        callback({
-            eventName: "eventSix",
-            eventType: "aviso largo",
-            scheduledTime: refTime + 530,
-            realTime: Date.now()
-        });
-    }, 530);
-}
-
-function eventSeven(callback) {
-    setTimeout(() => {
-        callback({
-            eventName: "eventSeven",
-            eventType: "aviso largo",
-            scheduledTime: refTime + 530,
-            realTime: Date.now()
-        });
-    }, 530);
-}
-
-function eventEight(callback) {
-    setTimeout(() => {
-        callback({
-            eventName: "eventEight",
-            eventType: "aviso largo",
-            scheduledTime: refTime + 530,
-            realTime: Date.now()
-        });
-    }, 530);
-}
-
 
 const register = [];
 
-eventOne((e1) => {
-    register.push(e1);
+createCallbackEvent("eventOne", 500, (err, eventData1) => {
+    if (err) return console.error("Execution error:", err);
+    register.push(eventData1);
 
-    eventTwo((e2) => {
-        register.push(e2);
+    createCallbackEvent("eventTwo", 530, (err, eventData2) => {
+        if (err) return console.error("Execution error:", err);
+        register.push(eventData2);
 
-        eventThree((e3) => {
-            register.push(e3);
+        createCallbackEvent("eventThree", 560, (err, eventData3) => {
+            if (err) return console.error("Execution error:", err);
+            register.push(eventData3);
 
-            eventFour((e4) => {
-                register.push(e4);
+            createCallbackEvent("eventFour", 590, (err, eventData4) => {
+                if (err) return console.error("Execution error:", err);
+                register.push(eventData4);
 
-                eventFive((e5) => {
-                    register.push(e5);
+                createCallbackEvent("eventFive", 620, (err, eventData5) => {
+                    if (err) return console.error("Execution error:", err);
+                    register.push(eventData5);
 
-                    eventSix((e6) => {
-                        register.push(e6);
+                    createCallbackEvent("eventSix", 650, (err, eventData6) => {
+                        if (err) return console.error("Execution error:", err);
+                        register.push(eventData6);
 
-                        eventSeven((e7) => {
-                            register.push(e7);
+                        createCallbackEvent("eventSeven", 680, (err, eventData7) => {
+                            if (err) return console.error("Execution error:", err);
+                            register.push(eventData7);
 
-                            eventEight((e8) => {
-                                register.push(e8);
+                            createCallbackEvent("eventEight", 710, (err, eventData8) => {
+                                if (err) return console.error("Execution error:", err);
+                                register.push(eventData8);
 
-                                processResults();
+                                processResults(register);
                             });
                         });
                     });
@@ -125,52 +58,29 @@ eventOne((e1) => {
     });
 });
 
+function processResults(eventRegister) {
+    const totalLatency = eventRegister.reduce((accum, current) => {
+        return accum + (current.realTime - current.scheduledTime);
+    }, 0);
 
-function processResults() {
-
-    console.log("final");
-    console.log(register);
-
-    // REDUCE: LATENCIA PROMEDIO
-   
-    const totalLatency = register.reduce(
-        (accum, current) => {
-            return accum +
-                (current.realTime - current.scheduledTime);
-        },
-        0
-    );
-
-    const averageLatency =
-        totalLatency / register.length;
-
-    console.log(
-        `Latencia promedio: ${averageLatency} ms`
-    );
-
+    const averageLatency = totalLatency / eventRegister.length;
     const threshold = 10;
 
-    const eventsOverThreshold = register
-        .filter(event =>
-            (event.realTime - event.scheduledTime) > threshold
-        )
-        .map(event => event.eventName);
+    const eventsOverThreshold = eventRegister
+        .filter((event) => (event.realTime - event.scheduledTime) > threshold)
+        .map((event) => event.eventName);
 
-    console.log(
-        "Eventos con desviación mayor a 10 ms:"
+    const firstDelayedEvent = eventRegister.find(
+        (event) => (event.realTime - event.scheduledTime) > threshold
     );
 
-    console.log(eventsOverThreshold);
+    printResults(eventRegister, averageLatency, eventsOverThreshold, firstDelayedEvent);
+}
 
-
-    const firstDelayedEvent = register.find(
-        event =>
-            (event.realTime - event.scheduledTime) > threshold
-    );
-
-    console.log(
-        "Primer evento con desviación mayor a 10 ms:"
-    );
-
-    console.log(firstDelayedEvent);
+function printResults(eventRegister, avgLatency, overThreshold, firstDelayed) {
+    console.log("\n--- Final Callbacks Results ---");
+    console.log("Register:", eventRegister);
+    console.log(`Average Latency: ${avgLatency.toFixed(3)} ms`);
+    console.log("Events over 10ms threshold:", overThreshold);
+    console.log("First delayed event:", firstDelayed);
 }
